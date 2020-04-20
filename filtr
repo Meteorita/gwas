@@ -1,0 +1,19 @@
+#!/bin/bash
+#filtr snp's by ID
+#initiate
+id=$1
+out=$2
+declare -A path=([plink]='/home/mrog/tools/plink-1.9/plink')
+#check input
+if [[ -z $id || -z $out ]]; then
+	echo "usage: $0 path/to/id  path/to/out"
+	exit 1
+fi
+#show input
+echo $id 
+#create list of bed markers for exclude
+perl -ne '@a=split; print "$a[1]\n" if(/rs/)' $id.bim > $out.snps
+#subset rs
+${path[plink]} --bfile $id --extract $out.snps --geno 0.1 --make-bed --autosome --out $out
+rm $out.nosex
+
